@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Tables</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .logout {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+        }
+        .btn-add {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        .btn-edit {
+            background-color: #FFC107;
+            color: white;
+            border: none;
+        }
+        .btn-delete {
+            background-color: #F44336;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<button class="navigate-button" onclick="navigateToPage()">Log out</button>
+    <h2>CRUD Table</h2>
+    <table id="crudTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <th>Column 4</th>
+                <th>Column 5</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically generated here -->
+        </tbody>
+    </table>
+    <button class="btn btn-add" onclick="addRow()">Add Row</button>
+
+    <script>
+        // Sample data to populate the table initially
+        let data = [
+            { id: 1, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 2, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 3, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 4, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 5, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 6, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 7, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 8, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 9, col1: '', col2: '', col3: '', col4: '', col5: '' },
+            { id: 10, col1: '', col2: '', col3: '', col4: '', col5: '' }
+        ];
+
+        // Save data to local storage
+        function saveData() {
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        // Load data from local storage
+        function loadData() {
+            const storedData = localStorage.getItem('tableData');
+            if (storedData) {
+                data = JSON.parse(storedData);
+            }
+        }
+
+        // Render the table
+        function renderTable() {
+            const tableBody = document.querySelector('#crudTable tbody');
+            tableBody.innerHTML = '';
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.id}</td>
+                    <td contenteditable="false" onblur="updateCell(${index}, 'col1', this.innerText)">${row.col1}</td>
+                    <td contenteditable="false" onblur="updateCell(${index}, 'col2', this.innerText)">${row.col2}</td>
+                    <td contenteditable="false" onblur="updateCell(${index}, 'col3', this.innerText)">${row.col3}</td>
+                    <td contenteditable="false" onblur="updateCell(${index}, 'col4', this.innerText)">${row.col4}</td>
+                    <td contenteditable="false" onblur="updateCell(${index}, 'col5', this.innerText)">${row.col5}</td>
+                    <td>
+                        <button class="btn btn-edit" onclick="editRow(${index})">Edit</button>
+                        <button class="btn btn-delete" onclick="deleteRow(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Add a new row
+        function addRow() {
+            const newRow = { id: data.length + 1, col1: '', col2: '', col3: '', col4: '', col5: '' };
+            data.push(newRow);
+            saveData();
+            renderTable();
+        }
+
+        function editRow(index) {
+    const tableBody = document.querySelector('#crudTable tbody');
+    const row = tableBody.children[index];
+    const cells = row.children;
+    for (let i = 1; i < cells.length - 1; i++) {
+        const cell = cells[i];
+        cell.contentEditable = true;
+        cell.classList.add('editable');
+    }
+    const editButton = cells[cells.length - 1].querySelector('.btn-edit');
+    if (editButton.textContent === 'Edit') {
+        editButton.textContent = 'Save';
+    } else {
+        editButton.textContent = 'Edit';
+        // Set contentEditable to false for each cell after saving
+        for (let i = 1; i < cells.length - 1; i++) {
+            cells[i].contentEditable = false;
+            cells[i].classList.remove('editable');
+        }
+    }
+}
+
+        // Delete a row
+        function deleteRow(index) {
+            data.splice(index, 1);
+            saveData();
+            renderTable();
+        }
+
+        // Update cell value
+        function updateCell(index, column, value) {
+            data[index][column] = value;
+            saveData();
+        }
+
+        // Load data and render table on page load
+        window.onload = () => {
+            loadData();
+            renderTable();
+        }
+    
+
+function navigateToPage() {
+        // Specify the URL of the page you want to navigate to
+        window.location.href = "index.html"
+        }
+    </script>
+</body>
+</html>
